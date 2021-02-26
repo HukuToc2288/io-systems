@@ -68,7 +68,7 @@ static ssize_t charDeviceRead(struct file *file, char __user *ubuf, size_t count
     struct LinkedIntList *tempEntry = firstEntry;
     while (tempEntry != NULL) {
         char data[10];
-        itoa(currentEntry->spacesCount, data);
+        itoa(tempEntry->spacesCount, data);
         printk(KERN_INFO "%s: %d\n", THIS_MODULE->name, currentEntry->spacesCount);
         tempEntry = tempEntry->nextEntry;
     }
@@ -111,8 +111,7 @@ static ssize_t charDeviceWrite(struct file *f, const char __user *buf, size_t le
     //printk(KERN_INFO "Driver: write()\n");
     int spacesCount = 0;
 
-
-    char line[255];
+    char line[len];
     int bytes_written = copy_from_user(line, buf, len);
 
     for (int i = 0; i < len; ++i) {
