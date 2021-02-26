@@ -112,14 +112,14 @@ static ssize_t charDeviceWrite(struct file *f, const char __user *buf, size_t le
     int spacesCount = 0;
 
     char line[len];
-    int bytes_written = copy_from_user(line, buf, len);
+    if (copy_from_user(line, buf, len)){
+        return -EFAULT;
+    }
 
     for (int i = 0; i < len; ++i) {
         if (line[i] == ' ')
             spacesCount++;
     }
-    // printk(KERN_INFO "megharajchard : device has been written\n");
-
 
     if (firstEntry == NULL) {
         firstEntry = (struct LinkedIntList *) (kmalloc(sizeof(struct LinkedIntList), GFP_KERNEL));
@@ -135,7 +135,6 @@ static ssize_t charDeviceWrite(struct file *f, const char __user *buf, size_t le
         lastEntry = tempEntry;
     }
     return len;
-    return bytes_written;
 }
 
 static struct file_operations charDeviceFops =
@@ -156,7 +155,7 @@ static int __init moduleInit(void) {
         unregister_chrdev_region(first, 1);
         return -1;
     }
-    if (device_create(cl, NULL, first, NULL, "lab1") == NULL) {
+    if (device_create(cl, NULL, first, NULL, "var4") == NULL) {
         class_destroy(cl);
         unregister_chrdev_region(first, 1);
         return -1;
@@ -170,7 +169,7 @@ static int __init moduleInit(void) {
     }
 
     //make proc file
-    procEntry = proc_create("lab1", 0444, NULL, &procFops);
+    procEntry = proc_create("var4", 0444, NULL, &procFops);
     printk(KERN_INFO "%s: Module loaded\n", THIS_MODULE->name);
     return 0;
 }
